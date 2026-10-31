@@ -1,0 +1,3 @@
+﻿מודל,F1-macro,Recall קטלנית,PR-AUC,Accuracy
+RandomForest,0.446,0.462,0.442,0.602
+XGBoost,0.458,0.238,0.446,0.667

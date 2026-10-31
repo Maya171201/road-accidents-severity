@@ -1,0 +1,17 @@
+﻿מודל,איזון,F1-macro,Recall קטלנית,PR-AUC,Accuracy
+RandomForest,class_weight,0.457,0.392,0.452,0.626
+XGBoost,class_weight,0.447,0.396,0.455,0.611
+LogisticRegression,class_weight,0.437,0.508,0.451,0.58
+DecisionTree,SMOTE,0.43,0.237,0.418,0.635
+LogisticRegression,SMOTE,0.428,0.495,0.439,0.568
+LogisticRegression,בלי טיפול,0.423,0.137,0.479,0.732
+RandomForest,SMOTE,0.419,0.125,0.456,0.721
+MLP,SMOTE,0.396,0.146,0.404,0.648
+XGBoost,בלי טיפול,0.393,0.09,0.475,0.733
+DecisionTree,class_weight,0.376,0.498,0.407,0.471
+DecisionTree,בלי טיפול,0.374,0.044,0.431,0.72
+XGBoost,SMOTE,0.36,0.078,0.469,0.734
+MLP,בלי טיפול,0.345,0.041,0.453,0.728
+KNN,בלי טיפול,0.334,0.025,0.407,0.729
+RandomForest,בלי טיפול,0.325,0.016,0.473,0.733
+KNN,SMOTE,0.298,0.461,0.385,0.34
