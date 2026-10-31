@@ -1,17 +1,17 @@
 ﻿מודל,איזון,F1-macro,Recall קטלנית,PR-AUC,Accuracy
-RandomForest,class_weight,0.457,0.392,0.452,0.626
-XGBoost,class_weight,0.447,0.396,0.455,0.611
-LogisticRegression,class_weight,0.437,0.508,0.451,0.58
-DecisionTree,SMOTE,0.43,0.237,0.418,0.635
-LogisticRegression,SMOTE,0.428,0.495,0.439,0.568
-LogisticRegression,בלי טיפול,0.423,0.137,0.479,0.732
-RandomForest,SMOTE,0.419,0.125,0.456,0.721
-MLP,SMOTE,0.396,0.146,0.404,0.648
-XGBoost,בלי טיפול,0.393,0.09,0.475,0.733
-DecisionTree,class_weight,0.376,0.498,0.407,0.471
-DecisionTree,בלי טיפול,0.374,0.044,0.431,0.72
-XGBoost,SMOTE,0.36,0.078,0.469,0.734
-MLP,בלי טיפול,0.345,0.041,0.453,0.728
-KNN,בלי טיפול,0.334,0.025,0.407,0.729
-RandomForest,בלי טיפול,0.325,0.016,0.473,0.733
-KNN,SMOTE,0.298,0.461,0.385,0.34
+RandomForest,class_weight,0.447,0.354,0.448,0.624
+XGBoost,class_weight,0.437,0.408,0.446,0.602
+LogisticRegression,class_weight,0.435,0.538,0.443,0.578
+LogisticRegression,SMOTE,0.425,0.522,0.431,0.564
+DecisionTree,SMOTE,0.424,0.266,0.411,0.627
+RandomForest,SMOTE,0.421,0.12,0.451,0.726
+LogisticRegression,בלי טיפול,0.417,0.12,0.473,0.734
+MLP,SMOTE,0.404,0.146,0.405,0.649
+XGBoost,בלי טיפול,0.39,0.079,0.471,0.735
+DecisionTree,class_weight,0.376,0.566,0.406,0.461
+DecisionTree,בלי טיפול,0.363,0.025,0.427,0.72
+XGBoost,SMOTE,0.355,0.06,0.463,0.737
+KNN,בלי טיפול,0.328,0.016,0.408,0.726
+RandomForest,בלי טיפול,0.32,0.006,0.469,0.735
+MLP,בלי טיפול,0.316,0.0,0.465,0.735
+KNN,SMOTE,0.29,0.471,0.382,0.33

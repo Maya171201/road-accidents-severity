@@ -7,9 +7,7 @@ from pathlib import Path
 
 import pandas as pd
 from sklearn.compose import ColumnTransformer
-from sklearn.impute import SimpleImputer
-from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import OneHotEncoder, StandardScaler
+from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
 
 ROOT = Path(__file__).resolve().parents[1]
 RAW_CSV = ROOT / "data" / "raw" / "h20241331data.csv"
@@ -77,23 +75,22 @@ def get_xy(df: pd.DataFrame, drop_missing_details: bool = True):
     """
     if drop_missing_details:
         df = df[~details_missing(df)]
+    # ל־22 תאונות אין קואורדינטות: מוציאים אותן במקום להשלים ערך
+    df = df.dropna(subset=["X", "Y"])
     df = add_features(df)
     X = df[CATEGORICAL + NUMERIC + BINARY]
     y = df[TARGET]
     return X, y
 
 
-def build_preprocessor(scale: bool = True) -> ColumnTransformer:
-    """נכנס לתוך כל Pipeline, כך שהוא לומד רק מחלק האימון."""
-    numeric_steps = [("impute", SimpleImputer(strategy="median"))]
-    if scale:
-        numeric_steps.append(("scale", StandardScaler()))
+def build_preprocessor() -> ColumnTransformer:
+    """נכנס לתוך כל Pipeline, כך שהוא לומד רק מחלק האימון (שיעור 1: Data Leakage).
+
+    קטגוריות: One-hot. מספריות (X, Y): MinMaxScaler לטווח 0–1 (שיעור 2: Scaling).
+    """
     return ColumnTransformer([
-        ("cat", Pipeline([
-            ("impute", SimpleImputer(strategy="most_frequent")),
-            ("onehot", OneHotEncoder(handle_unknown="infrequent_if_exist", min_frequency=10)),
-        ]), CATEGORICAL),
-        ("num", Pipeline(numeric_steps), NUMERIC),
+        ("cat", OneHotEncoder(handle_unknown="ignore"), CATEGORICAL),
+        ("num", MinMaxScaler(), NUMERIC),
         ("bin", "passthrough", BINARY),
     ])
 ####
