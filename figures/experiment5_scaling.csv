@@ -1,0 +1,7 @@
+﻿נרמול,מודל,F1-macro,Recall קטלנית,PR-AUC,Accuracy
+MinMaxScaler,LogisticRegression,0.438,0.498,0.45,0.583
+MinMaxScaler,KNN,0.335,0.028,0.41,0.727
+MinMaxScaler,MLP,0.312,0.0,0.44,0.736
+StandardScaler,LogisticRegression,0.438,0.511,0.45,0.581
+StandardScaler,KNN,0.334,0.025,0.407,0.729
+StandardScaler,MLP,0.305,0.0,0.441,0.733

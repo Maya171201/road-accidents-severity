@@ -1,2 +1,2 @@
 ﻿מודל,איזון,F1-macro,Recall קטלנית,PR-AUC,Accuracy
-RandomForest,Random Oversampling,0.434,0.139,0.446,0.686
+RandomForest,class_weight,0.45,0.35,0.443,0.626

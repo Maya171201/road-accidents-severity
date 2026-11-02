@@ -1,0 +1,9 @@
+﻿מודל,רכיבי PCA,F1-macro,Recall קטלנית,PR-AUC,Accuracy
+LogisticRegression,בלי PCA,0.438,0.498,0.451,0.583
+LogisticRegression,10,0.375,0.582,0.417,0.496
+LogisticRegression,30,0.415,0.607,0.437,0.546
+LogisticRegression,60,0.423,0.567,0.446,0.569
+KNN,בלי PCA,0.335,0.028,0.41,0.727
+KNN,10,0.355,0.062,0.404,0.719
+KNN,30,0.352,0.05,0.41,0.721
+KNN,60,0.363,0.056,0.407,0.726

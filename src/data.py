@@ -8,7 +8,9 @@ from pathlib import Path
 
 import pandas as pd
 from sklearn.compose import ColumnTransformer
-from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
+from sklearn.impute import SimpleImputer
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import MinMaxScaler, OneHotEncoder, StandardScaler
 
 ROOT = Path(__file__).resolve().parents[1]
 RAW_CSV = ROOT / "data" / "raw" / "h20241331data.csv"
@@ -112,22 +114,33 @@ def get_xy(df: pd.DataFrame, drop_missing_details: bool = True):
     """
     if drop_missing_details:
         df = df[~details_missing(df)]
-    # ל־22 תאונות אין קואורדינטות: מוציאים אותן במקום להשלים ערך
-    df = df.dropna(subset=["X", "Y"])
+    # שורות כפולות (שיעור 3). בקובץ הזה אין כאלה, אבל הבדיקה נשארת בקוד.
+    df = df.drop_duplicates(subset=[c for c in df.columns if c != "pk_teuna_fikt"])
+    # ל־20 תאונות אין קואורדינטות. לא מוציאים אותן: ה־X וה־Y שלהן מושלמים
+    # בחציון בתוך ה־Pipeline (שיעור 3: השלמת ערכים חסרים).
     df = add_features(df)
     X = df[CATEGORICAL + NUMERIC + BINARY]
     y = df[TARGET]
     return X, y
 
 
-def build_preprocessor() -> ColumnTransformer:
+def build_preprocessor(scaler: str = "minmax", dense: bool = False) -> ColumnTransformer:
     """נכנס לתוך כל Pipeline, כך שהוא לומד רק מחלק האימון (שיעור 1: Data Leakage).
 
-    קטגוריות: One-hot. מספריות (X, Y): MinMaxScaler לטווח 0–1 (שיעור 2: Scaling).
+    קטגוריות: One-hot.
+    מספריות (X, Y): השלמת חסרים בחציון (שיעור 3), ואז נרמול:
+      "minmax"   = MinMaxScaler, טווח 0–1 (שיעורים 2–3)
+      "standard" = StandardScaler, ממוצע 0 וסטיית תקן 1, z-score (שיעור 3)
+    dense=True מחזיר מטריצה רגילה ולא דלילה, כי PCA צריך כזו (שיעור 3).
     """
+    scalers = {"minmax": MinMaxScaler(), "standard": StandardScaler()}
+    numeric = Pipeline([
+        ("impute", SimpleImputer(strategy="median")),
+        ("scale", scalers[scaler]),
+    ])
     return ColumnTransformer([
-        ("cat", OneHotEncoder(handle_unknown="ignore"), CATEGORICAL),
-        ("num", MinMaxScaler(), NUMERIC),
+        ("cat", OneHotEncoder(handle_unknown="ignore", sparse_output=not dense), CATEGORICAL),
+        ("num", numeric, NUMERIC),
         ("bin", "passthrough", BINARY),
     ])
 ####
