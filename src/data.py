@@ -3,6 +3,7 @@
 
 משותף לשתי המחברות, כדי שה־EDA והמודלים ישתמשו בדיוק באותן עמודות.
 """
+from functools import lru_cache
 from pathlib import Path
 
 import pandas as pd
@@ -42,6 +43,42 @@ BINARY = ["HAS_STREET", "HAS_ROAD_NUMBER", "AT_JUNCTION_ID"]
 
 def load_raw() -> pd.DataFrame:
     return pd.read_csv(RAW_CSV, encoding="utf-8-sig")
+
+
+# מילון הקודים של הלמ"ס: לכל עמודה, מספר הטבלה שלה (MS_TAVLA) במילון
+CODES_CSV = ROOT / "data" / "raw" / "codes_dictionary_subset.csv"
+CODE_TABLE = {
+    "YEHIDA": 1, "SUG_DEREH": 2, "HUMRAT_TEUNA": 4, "SUG_TEUNA": 5, "HAD_MASLUL": 10,
+    "RAV_MASLUL": 11, "MEHIRUT_MUTERET": 12, "TKINUT": 13, "ROHAV": 14, "SIMUN_TIMRUR": 15,
+    "TEURA": 16, "MEZEG_AVIR": 18, "PNE_KVISH": 19, "SUG_EZEM": 21, "MERHAK_EZEM": 22,
+    "LO_HAZA": 23, "OFEN_HAZIYA": 24, "MEKOM_HAZIYA": 25, "KIVUN_HAZIYA": 26, "SUG_YOM": 37,
+    "YOM_LAYLA": 38, "YOM_BASHAVUA": 39, "HODESH_TEUNA": 60, "THUM_GEOGRAFI": 68,
+    "MAHOZ": 77, "NAFA": 79, "ZURAT_ISHUV": 81, "STATUS_IGUN": 205,
+}
+# שם בעברית לכל עמודה (מטבלה 0 במילון), לכותרות הגרפים
+COLUMN_NAMES = {
+    "YEHIDA": "יחידה משטרתית", "SUG_DEREH": "סוג הדרך", "HUMRAT_TEUNA": "חומרת התאונה",
+    "SUG_TEUNA": "סוג התאונה", "HAD_MASLUL": "דרך חד מסלולית", "RAV_MASLUL": "דרך דו מסלולית",
+    "MEHIRUT_MUTERET": "מהירות מותרת", "TKINUT": "תקינות הדרך", "ROHAV": "רוחב הכביש",
+    "SIMUN_TIMRUR": "סימון / תמרור", "TEURA": "תאורה", "MEZEG_AVIR": "מזג אוויר",
+    "PNE_KVISH": "מצב פני הכביש", "YOM_LAYLA": "יום/לילה", "YOM_BASHAVUA": "יום בשבוע",
+    "MAHOZ": "מחוז", "NAFA": "נפה", "HOUR": "שעה", "HAS_ROAD_NUMBER": "יש מספר כביש",
+}
+
+
+@lru_cache(maxsize=None)
+def code_labels(col: str) -> dict:
+    """{קוד: שם} לעמודה, לפי מילון הקודים. עמודה שלא במילון: מילון ריק."""
+    if col not in CODE_TABLE:
+        return {}
+    codes = pd.read_csv(CODES_CSV, encoding="utf-8")
+    table = codes[codes["MS_TAVLA"] == CODE_TABLE[col]]
+    return dict(zip(table["KOD"], table["TEUR"]))
+
+
+def label(col: str, code) -> str:
+    """השם של קוד אחד, ואם אין לו שם במילון: "קוד N"."""
+    return code_labels(col).get(code, f"קוד {code}")
 
 
 def add_features(df: pd.DataFrame) -> pd.DataFrame:
