@@ -35,7 +35,7 @@ https://data.gov.il/dataset/2023-puf (הקובץ `h20241331data.csv`). כל שו
 4. **איכות הנתונים (שיעור 3):** אין שורות כפולות. ל־22 תאונות אין קואורדינטות (21 מהן בדרך לא־עירונית, לא בצומת). הן לא נזרקות: ה־X וה־Y שלהן מושלמים בחציון בתוך ה־Pipeline.
 
 ## תוצאות הסיווג (‏5-fold stratified CV על ה־train, ‏5,664 תאונות)
-**רק שיטות שנלמדו בהרצאות הקורס.** בראש כל מחברת יש טבלה שמראה מאיזה שיעור כל שיטה.
+**רק שיטות שנלמדו בהרצאות הקורס.** בראש המחברת יש טבלה שמראה מאיזה שיעור כל שיטה.
 
 **ניסוי 1: ‏6 מודלים × 3 שיטות איזון** (הטוב ביותר לכל מודל):
 | מודל | טיפול באי־איזון | F1-macro | Recall קטלנית | PR-AUC |
@@ -63,8 +63,8 @@ class_weight ‏0.455 · Random Oversampling ‏0.452 · SMOTE ‏0.402 · SMOTE
 ```
 data/raw/        קובץ הלמ"ס המקורי (לא נערך)
 data/processed/
-notebooks/       01_eda.ipynb, 02_classification.ipynb
-src/data.py      טעינה, פיצ'רים חדשים, עיבוד מקדים (משותף למחברות)
+notebooks/       road_accidents_severity.ipynb (חלק א': EDA · חלק ב': מודלים)
+src/data.py      טעינה, פיצ'רים חדשים, עיבוד מקדים
 figures/         כל הגרפים וטבלאות התוצאות
 ```
 
@@ -82,7 +82,7 @@ jupyter notebook notebooks/
 
 <div dir="rtl">
 
-מריצים קודם את `01_eda.ipynb` ואחר כך את `02_classification.ipynb`. בכל שלב אקראי `random_state=42`, ולכן המספרים זהים בכל הרצה.
+הכול במחברת אחת, `road_accidents_severity.ipynb`: חלק א' (EDA, סעיפים 1–8) רץ מהר, וחלק ב' (מודלים, סעיפים 9–19) לוקח כ־15–20 דקות. בכל שלב אקראי `random_state=42`, ולכן המספרים זהים בכל הרצה.
 
 ## ספריות
 pandas, numpy, scipy, matplotlib, seaborn, scikit-learn, imbalanced-learn, xgboost, jupyter (הגרסאות ב־`requirements.txt`).
