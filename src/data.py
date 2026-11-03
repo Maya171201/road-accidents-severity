@@ -49,6 +49,7 @@ def load_raw() -> pd.DataFrame:
 
 # מילון הקודים של הלמ"ס: לכל עמודה, מספר הטבלה שלה (MS_TAVLA) במילון
 CODES_CSV = ROOT / "data" / "raw" / "codes_dictionary_subset.csv"
+SETTLEMENTS_CSV = ROOT / "data" / "raw" / "settlements.csv"
 CODE_TABLE = {
     "YEHIDA": 1, "SUG_DEREH": 2, "HUMRAT_TEUNA": 4, "SUG_TEUNA": 5, "HAD_MASLUL": 10,
     "RAV_MASLUL": 11, "MEHIRUT_MUTERET": 12, "TKINUT": 13, "ROHAV": 14, "SIMUN_TIMRUR": 15,
@@ -64,13 +65,18 @@ COLUMN_NAMES = {
     "MEHIRUT_MUTERET": "מהירות מותרת", "TKINUT": "תקינות הדרך", "ROHAV": "רוחב הכביש",
     "SIMUN_TIMRUR": "סימון / תמרור", "TEURA": "תאורה", "MEZEG_AVIR": "מזג אוויר",
     "PNE_KVISH": "מצב פני הכביש", "YOM_LAYLA": "יום/לילה", "YOM_BASHAVUA": "יום בשבוע",
-    "MAHOZ": "מחוז", "NAFA": "נפה", "HOUR": "שעה", "HAS_ROAD_NUMBER": "יש מספר כביש",
+    "MAHOZ": "מחוז", "NAFA": "נפה", "SEMEL_YISHUV": "יישוב", "HOUR": "שעה", "HAS_ROAD_NUMBER": "יש מספר כביש",
 }
 
 
 @lru_cache(maxsize=None)
 def code_labels(col: str) -> dict:
     """{קוד: שם} לעמודה, לפי מילון הקודים. עמודה שלא במילון: מילון ריק."""
+    if col == "SEMEL_YISHUV":
+        # שמות היישובים לא במילון התאונות, אלא ברשימת היישובים של הלמ"ס (data.gov.il).
+        # קוד 0 = התאונה לא קרתה בתוך יישוב (דרך לא־עירונית).
+        names = pd.read_csv(SETTLEMENTS_CSV, encoding="utf-8")
+        return {0: "לא ביישוב", **dict(zip(names["SEMEL_YISHUV"], names["SHEM_YISHUV"]))}
     if col not in CODE_TABLE:
         return {}
     codes = pd.read_csv(CODES_CSV, encoding="utf-8")
