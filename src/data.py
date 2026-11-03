@@ -21,26 +21,32 @@ TARGET = "HUMRAT_TEUNA"
 # קוד הלמ"ס: 1 = קטלנית, 2 = קשה, 3 = קלה (לאמת במילון הקודים)
 SEVERITY_NAMES = {1: "קטלנית", 2: "קשה", 3: "קלה"}
 
-# ערך אחד בכל השורות, או מזהה שורה: אין בהם מידע
+# ההחלטות על העמודות: פגישת הצוות (3.11). הרשימות כאן הן תיעוד; למודל נכנס רק מה שב־CATEGORICAL, NUMERIC ו־BINARY.
+
+# ערך אחד בכל השורות, או מזהה שורה (מספר תאונה): אין בהם מידע
 DROP_NO_INFO = ["pk_teuna_fikt", "sug_tik", "SHNAT_TEUNA"]
 
-# מזהי רחוב / צומת / כביש עם מאות ערכים. One-hot שלהם היה יוצר אלפי עמודות כמעט ריקות,
-# ולכן מחליפים אותם בדגלים שבהמשך ובעמודות מיקום גסות יותר (מחוז, נפה, X, Y).
-DROP_HIGH_CARDINALITY = [
-    "REHOV1", "REHOV2", "BAYIT", "ZOMET_IRONI", "ZOMET_LO_IRONI",
-    "KVISH1", "KVISH2", "KM", "SEMEL_YISHUV", "EZOR_TIVI", "MAAMAD_MINIZIPALI",
-]
+# הצוות החליט להוריד
+DROP_BY_TEAM = ["SEMEL_YISHUV", "MAAMAD_MINIZIPALI"]
+
+# SUG_DEREH מפוצלת לשני דגלים: URBAN (עירוני) ו־JUNCTION (בצומת)
+REPLACED = ["SUG_DEREH"]
+
+# נשארות בדאטה ונבדקות ב־EDA, אבל לא נכנסות למודל: אלה מזהים עם מאות ערכים,
+# והקוד של רחוב או צומת עירוני חוזר בכמה יישובים, כך שבלי סמל היישוב אין לו משמעות.
+# ZOMET_IRONI ו־ZOMET_LO_IRONI מאוחדות לעמודה אחת: ZOMET.
+EDA_ONLY = ["REHOV1", "REHOV2", "BAYIT", "ZOMET_IRONI", "ZOMET_LO_IRONI", "KVISH1", "KVISH2", "KM"]
 
 CATEGORICAL = [
-    "THUM_GEOGRAFI", "SUG_DEREH", "YEHIDA", "HODESH_TEUNA", "SUG_YOM",
+    "THUM_GEOGRAFI", "YEHIDA", "HODESH_TEUNA", "SUG_YOM",
     "YOM_LAYLA", "YOM_BASHAVUA", "SUG_TEUNA", "HAD_MASLUL", "RAV_MASLUL",
     "MEHIRUT_MUTERET", "TKINUT", "ROHAV", "SIMUN_TIMRUR", "TEURA",
     "MEZEG_AVIR", "PNE_KVISH", "SUG_EZEM", "MERHAK_EZEM", "LO_HAZA",
-    "OFEN_HAZIYA", "MEKOM_HAZIYA", "KIVUN_HAZIYA", "MAHOZ", "NAFA",
+    "OFEN_HAZIYA", "MEKOM_HAZIYA", "KIVUN_HAZIYA", "MAHOZ", "NAFA", "EZOR_TIVI",
     "ZURAT_ISHUV", "STATUS_IGUN", "HOUR",
 ]
 NUMERIC = ["X", "Y"]
-BINARY = ["HAS_STREET", "HAS_ROAD_NUMBER", "AT_JUNCTION_ID"]
+BINARY = ["URBAN", "JUNCTION", "HAS_STREET", "HAS_ROAD_NUMBER"]
 
 
 def load_raw() -> pd.DataFrame:
@@ -56,7 +62,12 @@ CODE_TABLE = {
     "TEURA": 16, "MEZEG_AVIR": 18, "PNE_KVISH": 19, "SUG_EZEM": 21, "MERHAK_EZEM": 22,
     "LO_HAZA": 23, "OFEN_HAZIYA": 24, "MEKOM_HAZIYA": 25, "KIVUN_HAZIYA": 26, "SUG_YOM": 37,
     "YOM_LAYLA": 38, "YOM_BASHAVUA": 39, "HODESH_TEUNA": 60, "THUM_GEOGRAFI": 68,
-    "MAHOZ": 77, "NAFA": 79, "ZURAT_ISHUV": 81, "STATUS_IGUN": 205,
+    "MAHOZ": 77, "NAFA": 79, "EZOR_TIVI": 80, "ZURAT_ISHUV": 81, "STATUS_IGUN": 205,
+}
+# שמות לדגלים שיצרנו (אין להם טבלה במילון)
+FLAG_LABELS = {
+    "URBAN": {1: "עירוני", 0: "לא עירוני"},
+    "JUNCTION": {1: "בצומת", 0: "לא בצומת"},
 }
 # שם בעברית לכל עמודה (מטבלה 0 במילון), לכותרות הגרפים
 COLUMN_NAMES = {
@@ -65,13 +76,16 @@ COLUMN_NAMES = {
     "MEHIRUT_MUTERET": "מהירות מותרת", "TKINUT": "תקינות הדרך", "ROHAV": "רוחב הכביש",
     "SIMUN_TIMRUR": "סימון / תמרור", "TEURA": "תאורה", "MEZEG_AVIR": "מזג אוויר",
     "PNE_KVISH": "מצב פני הכביש", "YOM_LAYLA": "יום/לילה", "YOM_BASHAVUA": "יום בשבוע",
-    "MAHOZ": "מחוז", "NAFA": "נפה", "SEMEL_YISHUV": "יישוב", "HOUR": "שעה", "HAS_ROAD_NUMBER": "יש מספר כביש",
+    "MAHOZ": "מחוז", "NAFA": "נפה", "EZOR_TIVI": "אזור טבעי", "SEMEL_YISHUV": "יישוב", "HOUR": "שעה",
+    "HAS_ROAD_NUMBER": "יש מספר כביש", "URBAN": "עירוני / לא עירוני", "JUNCTION": "צומת / לא צומת",
 }
 
 
 @lru_cache(maxsize=None)
 def code_labels(col: str) -> dict:
     """{קוד: שם} לעמודה, לפי מילון הקודים. עמודה שלא במילון: מילון ריק."""
+    if col in FLAG_LABELS:
+        return FLAG_LABELS[col]
     if col == "SEMEL_YISHUV":
         # שמות היישובים לא במילון התאונות, אלא ברשימת היישובים של הלמ"ס (data.gov.il).
         # קוד 0 = התאונה לא קרתה בתוך יישוב (דרך לא־עירונית).
@@ -95,11 +109,16 @@ def add_features(df: pd.DataFrame) -> pd.DataFrame:
     # ל־SHAA יש 96 קודים: רבעי שעה ביממה (1 = 00:00–00:14). לאמת במילון.
     # מקבצים לשעות, כדי לרדת מ־96 קטגוריות ל־24.
     out["HOUR"] = (out["SHAA"] - 1) // 4
+    # SUG_DEREH: ‏1 = עירונית בצומת, 2 = עירונית לא בצומת, 3 = לא עירונית בצומת, 4 = לא עירונית לא בצומת.
+    # מפצלים לשני דגלים (החלטת הצוות), כדי שכל אחד מהם יהיה פיצ'ר בפני עצמו.
+    out["URBAN"] = out["SUG_DEREH"].isin([1, 2]).astype(int)
+    out["JUNCTION"] = out["SUG_DEREH"].isin([1, 3]).astype(int)
+    # צומת עירוני וצומת לא עירוני אף פעם לא מלאים יחד, ולכן מאחדים לעמודה אחת (החלטת הצוות). ל־EDA בלבד.
+    out["ZOMET"] = out["ZOMET_IRONI"].fillna(out["ZOMET_LO_IRONI"])
     # החסרים כאן מבניים (תאונה עירונית מול בין־עירונית),
     # ולכן עצם העובדה שהשדה מלא היא מידע.
     out["HAS_STREET"] = out["REHOV1"].notna().astype(int)
     out["HAS_ROAD_NUMBER"] = out["KVISH1"].notna().astype(int)
-    out["AT_JUNCTION_ID"] = (out["ZOMET_IRONI"].notna() | out["ZOMET_LO_IRONI"].notna()).astype(int)
     return out
 
 
