@@ -27,7 +27,7 @@ SEVERITY_NAMES = {1: "קטלנית", 2: "קשה", 3: "קלה"}
 DROP_NO_INFO = ["pk_teuna_fikt", "sug_tik", "SHNAT_TEUNA"]
 
 # הצוות החליט להוריד
-DROP_BY_TEAM = ["SEMEL_YISHUV", "MAAMAD_MINIZIPALI"]
+DROP_BY_TEAM = ["MAAMAD_MINIZIPALI"]
 
 # SUG_DEREH מפוצלת לשני דגלים: URBAN (עירוני) ו־JUNCTION (בצומת)
 REPLACED = ["SUG_DEREH"]
@@ -44,6 +44,9 @@ CATEGORICAL = [
     "MEZEG_AVIR", "PNE_KVISH", "SUG_EZEM", "MERHAK_EZEM", "LO_HAZA",
     "OFEN_HAZIYA", "MEKOM_HAZIYA", "KIVUN_HAZIYA", "MAHOZ", "NAFA", "EZOR_TIVI",
     "ZURAT_ISHUV", "STATUS_IGUN", "HOUR",
+    # סמל יישוב: הצוות החליט שנכנס (3.11). קוד 0 = לא בתוך יישוב.
+    # One-hot נותן עמודה לכל יישוב (כ־220 ב־train), ולרובם יש מעט תאונות.
+    "SEMEL_YISHUV",
 ]
 NUMERIC = ["X", "Y"]
 BINARY = ["URBAN", "JUNCTION", "HAS_STREET", "HAS_ROAD_NUMBER"]
